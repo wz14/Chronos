@@ -45,7 +45,10 @@ type Sender struct {
 
 func (s *Sender) Send(value pb.Message) error {
 	c := pb.NewNodeConClient(s.receiver.Connect)
-	_, _ = c.SendMessage(context.Background(), &value)
+	_, err := c.SendMessage(context.Background(), &value)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
