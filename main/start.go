@@ -55,7 +55,8 @@ func (s *Start) HonestRun() {
 	// 3. wait some time for others' nodes start
 	// 4. create id group for all nodes
 
-	log.Infof("honest node id:%d", s.c.MyID)
+	localaddress := s.c.IpList[s.c.MyID] + ":" + strconv.Itoa(s.c.PortList[s.c.MyID])
+	log.Infof("honest node id:%d in %s", s.c.MyID, localaddress)
 	//create server & classifer
 	lis, err := net.Listen("tcp", ":"+strconv.Itoa(s.c.PortList[s.c.MyID]))
 	if err != nil {
