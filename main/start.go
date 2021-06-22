@@ -62,6 +62,7 @@ func (s *Start) HonestRun() {
 	if err != nil {
 		log.Fatalf("tcp port open fail: %s in %d server", err, s.c.MyID)
 	}
+	defer lis.Close()
 	server := grpc.NewServer()
 
 	s.pig, err = idchannel.NewPIDGroup(&s.c)
