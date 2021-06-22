@@ -9,58 +9,62 @@ import (
 	"log"
 	"net"
 	"strconv"
+	"sync"
 	"testing"
 	"time"
 )
 
 func TestSend(t *testing.T) {
+	t.Log("is it run?")
 	s := mock.NewStart()
-
-	s.Run(func(s mock.Start) {
-		lis, err := net.Listen("tcp", ":"+strconv.Itoa(s.C.PortList[s.C.MyID]))
+	s.Run(func(smock mock.Start, wg *sync.WaitGroup) {
+		t.Log("is it run?")
+		lis, err := net.Listen("tcp", ":"+strconv.Itoa(smock.C.PortList[smock.C.MyID]))
 		if err != nil {
-			t.Fatalf("tcp port open fail: %s in %d server", err, s.C.MyID)
+			t.Fatalf("tcp port open fail: %s in %d server", err, smock.C.MyID)
 		}
+		defer lis.Close()
 		server := grpc.NewServer()
 
-		s.Pig, err = idchannel.NewPIDGroup(&s.C)
+		smock.Pig, err = idchannel.NewPIDGroup(&smock.C)
 		if err != nil {
 			log.Fatalf("primitive group create fail: %s", err.Error())
 		}
 
-		pb.RegisterNodeConServer(server, idchannel.NewClassifier(&s.C, s.C.MyID, s.Pig))
+		pb.RegisterNodeConServer(server, idchannel.NewClassifier(&smock.C, smock.C.MyID, smock.Pig))
 		go server.Serve(lis)
 
 		// wait time
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Second)
 
 		// create id group
-		s.Nig, err = idchannel.NewIDGroup(&s.C)
+		smock.Nig, err = idchannel.NewIDGroup(&smock.C)
 		if err != nil {
 			t.Fatalf("group create fail: %s", err.Error())
 		}
-
-		if s.C.MyID == 1 {
+		t.Log("is it run?")
+		if smock.C.MyID == 1 {
 			err := Send(pb.Message{
 				Id:       "Send_1",
 				Sender:   1,
 				Receiver: 2,
 				Data:     []byte("what are you doing"),
-			}, s.Pig.GetRootPID("Send_1"), s.Nig)
+			}, smock.Pig.GetRootPID("Send_1"), smock.Nig)
 			if err != nil {
 				t.Fatalf("send error: %s", err.Error())
 			}
 		}
 
-		if s.C.MyID == 2 {
-			m, err := Receive(s.Pig.GetRootPID("Send_1"))
+		if smock.C.MyID == 2 {
+			t.Log("run this")
+			m, err := Receive(smock.Pig.GetRootPID("Send_1"))
 			if err != nil {
 				t.Fatalf("receive error: %s", err.Error())
 			}
 			if m.Id != "Send_1" {
 				t.Error("id is not Send_1 in m")
 			}
-			if bytes.Equal(m.Data, []byte("what are you doing")) {
+			if !bytes.Equal(m.Data, []byte("what are you doing")) {
 				t.Error("data is not 'what are you doing' in m")
 			}
 			if m.Sender != 1 {
@@ -71,7 +75,7 @@ func TestSend(t *testing.T) {
 			}
 		}
 
-		s.Wg.Wait()
+		wg.Done()
 	})
 }
 

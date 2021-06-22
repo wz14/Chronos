@@ -18,7 +18,6 @@ func NewStart() *Start {
 
 type Start struct {
 	C   Config
-	Wg  sync.WaitGroup
 	Nig *idchannel.NodeIDGroup
 	Pig *idchannel.PIDGroup
 }
@@ -29,14 +28,15 @@ func (s *Start) CopySelf(id int) Start {
 	return Start{C: newc}
 }
 
-func (s *Start) Run(f func(s Start)) {
+func (s *Start) Run(f func(s Start, wg *sync.WaitGroup)) {
+	wg := sync.WaitGroup{}
 	if s.C.Isremote {
 		log.Fatal("no implement remote deployment setting")
 	}
-	s.Wg.Add(s.C.N)
 	for i := 0; i < s.C.N; i++ {
 		news := s.CopySelf(i)
-		go f(news)
+		wg.Add(1)
+		go f(news, &wg)
 	}
-	s.Wg.Done()
+	wg.Wait()
 }

@@ -15,6 +15,7 @@ type Config interface {
 }
 
 type NodeIDGroup struct {
+	N         int
 	NodeIDmap map[int]*NodeID
 	log       *logger.Logger
 }
@@ -46,6 +47,8 @@ func NewIDGroup(c Config) (*NodeIDGroup, error) {
 
 	nig := NodeIDGroup{
 		NodeIDmap: map[int]*NodeID{},
+		log:       l,
+		N:         n,
 	}
 	for i := 0; i < n; i++ {
 		ID, err := NewID(i, ipl[i], pol[i])
