@@ -27,6 +27,6 @@ func (c *Classifier) SendMessage(_ context.Context, m *pb.Message) (*pb.Zero, er
 	c.l.Infof("receive %s message from %d", m.Id, m.Sender)
 	c.l.Debugf("receive %s message from %d: %v:", m.Id, m.Sender, m.Data)
 	pid := c.pig.GetRootPID(m.Id)
-	pid.C <- *m
+	pid.C <- m
 	return &pb.Zero{}, nil
 }

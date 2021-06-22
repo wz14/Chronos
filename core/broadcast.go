@@ -1,6 +1,7 @@
 package core
 
 import (
+	"acc/config"
 	"acc/idchannel"
 	"acc/pb"
 	"context"
@@ -9,16 +10,19 @@ import (
 
 var BroadcastError = "node %d send error in %s" // sender, receiver, pid
 
-func BroadCast(value pb.Message, pid *idchannel.PrimitiveID, nig *idchannel.NodeIDGroup) error {
+func BroadCast(value *pb.Message, s config.Start) error {
+	pig := s.Getpig()
+	pid := pig.GetRootPID(value.Id)
+
+	nig := s.Getnig()
 	senderID, err := nig.GetID(int(value.Sender))
 	if err != nil {
 		return errors.Wrapf(err, BroadcastError, value.Sender, pid)
 	}
-
 	bc := BroadCaster{
 		pid:    pid,
 		sender: senderID,
-		nig:    nig,
+		s:      s,
 	}
 
 	err = bc.Broadcast(value)
@@ -32,21 +36,28 @@ func BroadCast(value pb.Message, pid *idchannel.PrimitiveID, nig *idchannel.Node
 type BroadCaster struct {
 	pid    *idchannel.PrimitiveID
 	sender *idchannel.NodeID
-	nig    *idchannel.NodeIDGroup
+	s      config.Start
 }
 
-func (s *BroadCaster) Broadcast(value pb.Message) error {
-	for i := 0; i < s.nig.N; i++ {
-		id, err := s.nig.GetID(i)
+func (b *BroadCaster) Broadcast(value *pb.Message) error {
+	conf := b.s.GetConfig()
+	nig := b.s.Getnig()
+	for i := 0; i < conf.N; i++ {
+		id, err := nig.GetID(i)
 		if err != nil {
 			return errors.Wrapf(err, "get id %d fail", i)
 		}
-		c := pb.NewNodeConClient(id.Connect)
-		value.Receiver = uint32(i)
-		_, err = c.SendMessage(context.Background(), &value)
-		if err != nil {
-			return errors.Wrapf(err, "send message fail to %d", i)
-		}
+		i := i
+		go func() {
+			c := pb.NewNodeConClient(id.Connect)
+			newValue := pb.Message{
+				Id:       value.Id,
+				Sender:   value.Sender,
+				Receiver: uint32(i),
+				Data:     value.Data,
+			}
+			_, _ = c.SendMessage(context.Background(), &newValue)
+		}()
 	}
 	return nil
 }

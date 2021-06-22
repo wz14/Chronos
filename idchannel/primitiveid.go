@@ -25,7 +25,7 @@ func NewPIDGroup(c Config) (*PIDGroup, error) {
 
 type PrimitiveID struct {
 	Id string
-	C  chan pb.Message
+	C  chan *pb.Message
 }
 
 func (p *PIDGroup) GetRootPID(name string) *PrimitiveID {
@@ -44,7 +44,7 @@ func (p *PIDGroup) GetChildPID(cid string, pid *PrimitiveID) *PrimitiveID {
 
 func (p *PIDGroup) createPID(name string) *PrimitiveID {
 	p.l.Infof("create %s channel", name)
-	c := make(chan pb.Message, MAXMESSAGE)
+	c := make(chan *pb.Message, MAXMESSAGE)
 	pid := &PrimitiveID{
 		Id: name,
 		C:  c,

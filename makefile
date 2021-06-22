@@ -6,7 +6,7 @@ build:
 
 .PHONY: test
 test:
-	go test ./main
+	go test ./config
 	go test ./core
 
 .PHONY: clean

@@ -1,4 +1,4 @@
-package mock
+package config
 
 import (
 	"github.com/pkg/errors"
@@ -26,8 +26,8 @@ type Config struct {
 	MyID   int
 }
 
-func NewConfig() (Config, error) {
-	ConfigName := "./mock/config1.yaml"
+func NewConfig(configname string) (Config, error) {
+	ConfigName := configname
 	c := Config{}
 	err := c.ReadConfig(ConfigName)
 	if err != nil {

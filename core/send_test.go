@@ -17,7 +17,7 @@ import (
 func TestSend(t *testing.T) {
 	t.Log("is it run?")
 	s := mock.NewStart()
-	s.Run(func(smock mock.Start, wg *sync.WaitGroup) {
+	s.MockRun(func(smock mock.Start, wg *sync.WaitGroup) {
 		t.Log("is it run?")
 		lis, err := net.Listen("tcp", ":"+strconv.Itoa(smock.C.PortList[smock.C.MyID]))
 		if err != nil {
@@ -44,12 +44,12 @@ func TestSend(t *testing.T) {
 		}
 		t.Log("is it run?")
 		if smock.C.MyID == 1 {
-			err := Send(pb.Message{
+			err := Send(&pb.Message{
 				Id:       "Send_1",
 				Sender:   1,
 				Receiver: 2,
 				Data:     []byte("what are you doing"),
-			}, smock.Pig.GetRootPID("Send_1"), smock.Nig)
+			}, &smock)
 			if err != nil {
 				t.Fatalf("send error: %s", err.Error())
 			}
@@ -57,7 +57,7 @@ func TestSend(t *testing.T) {
 
 		if smock.C.MyID == 2 {
 			t.Log("run this")
-			m, err := Receive(smock.Pig.GetRootPID("Send_1"))
+			m, err := Receive(smock.Pig.GetRootPID("Send_1"), &smock)
 			if err != nil {
 				t.Fatalf("receive error: %s", err.Error())
 			}

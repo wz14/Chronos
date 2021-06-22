@@ -1,6 +1,7 @@
 package mock
 
 import (
+	"acc/config"
 	"acc/idchannel"
 	"acc/logger"
 	"sync"
@@ -9,7 +10,7 @@ import (
 var log = logger.NewLogger("main")
 
 func NewStart() *Start {
-	c, err := NewConfig() // get a no-pointer config
+	c, err := config.NewConfig("./mock/config1.yaml") // get a no-pointer config
 	if err != nil {
 		log.Fatalf("read config fail: %s", err.Error())
 	}
@@ -17,9 +18,21 @@ func NewStart() *Start {
 }
 
 type Start struct {
-	C   Config
+	C   config.Config
 	Nig *idchannel.NodeIDGroup
 	Pig *idchannel.PIDGroup
+}
+
+func (s *Start) Getnig() *idchannel.NodeIDGroup {
+	return s.Nig
+}
+
+func (s *Start) Getpig() *idchannel.PIDGroup {
+	return s.Pig
+}
+
+func (s *Start) GetConfig() *config.Config {
+	return &s.C
 }
 
 func (s *Start) CopySelf(id int) Start {
@@ -28,7 +41,11 @@ func (s *Start) CopySelf(id int) Start {
 	return Start{C: newc}
 }
 
-func (s *Start) Run(f func(s Start, wg *sync.WaitGroup)) {
+func (s *Start) Run() {
+
+}
+
+func (s *Start) MockRun(f func(s Start, wg *sync.WaitGroup)) {
 	wg := sync.WaitGroup{}
 	if s.C.Isremote {
 		log.Fatal("no implement remote deployment setting")

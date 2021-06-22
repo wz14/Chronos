@@ -17,7 +17,7 @@ import (
 func TestBroadCast(t *testing.T) {
 	s := mock.NewStart()
 
-	s.Run(func(s mock.Start, wg *sync.WaitGroup) {
+	s.MockRun(func(s mock.Start, wg *sync.WaitGroup) {
 		lis, err := net.Listen("tcp", ":"+strconv.Itoa(s.C.PortList[s.C.MyID]))
 		if err != nil {
 			t.Fatalf("tcp port open fail: %s in %d server", err, s.C.MyID)
@@ -45,12 +45,12 @@ func TestBroadCast(t *testing.T) {
 		go func() {
 			t.Log("enter sender routine")
 			if s.C.MyID == 1 {
-				err := BroadCast(pb.Message{
+				err := BroadCast(&pb.Message{
 					Id:       "BC_1",
 					Sender:   1,
 					Receiver: 0,
 					Data:     []byte("what are you doing"),
-				}, s.Pig.GetRootPID("BC_1"), s.Nig)
+				}, &s)
 				if err != nil {
 					t.Fatalf("send error: %s", err.Error())
 				}
@@ -59,7 +59,7 @@ func TestBroadCast(t *testing.T) {
 
 		if true {
 			t.Logf("enter receiver routine %d", s.C.MyID)
-			m, err := Receive(s.Pig.GetRootPID("BC_1"))
+			m, err := Receive(s.Pig.GetRootPID("BC_1"), &s)
 			if err != nil {
 				t.Fatalf("receive error: %s", err.Error())
 			}
@@ -73,7 +73,7 @@ func TestBroadCast(t *testing.T) {
 				t.Error("sender is not 1 in m")
 			}
 			if m.Receiver != uint32(s.C.MyID) {
-				t.Error("receiver is not 2 in m")
+				t.Errorf("receiver is %d in m but I'm %d", m.Receiver, s.C.MyID)
 			}
 		}
 		t.Log("done with ", s.C.MyID)
