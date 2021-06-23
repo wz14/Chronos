@@ -1,11 +1,12 @@
 package main
 
 import (
-	"acc/config"
+	"acc/Benchmark"
 )
 
 func main() {
 	// command process or something
-	start := config.NewStart()
+	start := NewLocalStart()
 	start.Run()
+	Benchmark.BenchmarkOuput()
 }

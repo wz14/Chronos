@@ -1,4 +1,4 @@
-package RBC
+package rbc
 
 import (
 	"acc/config"

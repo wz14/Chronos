@@ -10,7 +10,3 @@ type Start interface {
 	Getpig() *idchannel.PIDGroup
 	GetConfig() *Config
 }
-
-func NewStart() Start {
-	return NewLocalStart()
-}

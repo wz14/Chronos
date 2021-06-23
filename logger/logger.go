@@ -38,7 +38,9 @@ func NewLoggerWithID(module string, id int) *Logger {
 		m:      module,
 	}
 	//l.SetOutput(os.Stdout)
-	l.SetFormatter(&logrus.TextFormatter{})
+	l.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
 	l.AddHook(&ModuleHook{
 		m:  module,
 		id: id,

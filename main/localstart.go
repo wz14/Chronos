@@ -1,9 +1,13 @@
-package config
+package main
 
 import (
+	"acc/Benchmark"
+	"acc/config"
 	"acc/idchannel"
 	"acc/logger"
 	"acc/pb"
+	"acc/rbc"
+	"crypto/rand"
 	"google.golang.org/grpc"
 	"net"
 	"strconv"
@@ -15,7 +19,7 @@ var wg = sync.WaitGroup{}
 
 func NewLocalStart() *LocalStart {
 	lo := logger.NewLogger("main")
-	c, err := NewConfig("./config.yaml") // get a no-pointer config
+	c, err := config.NewConfig("./config.yaml") // get a no-pointer config
 	if err != nil {
 		lo.Fatalf("read config fail: %s", err.Error())
 	}
@@ -26,7 +30,7 @@ func NewLocalStart() *LocalStart {
 }
 
 type LocalStart struct {
-	c   Config
+	c   config.Config
 	nig *idchannel.NodeIDGroup
 	pig *idchannel.PIDGroup
 	l   *logger.Logger
@@ -40,7 +44,7 @@ func (s *LocalStart) Getpig() *idchannel.PIDGroup {
 	return s.pig
 }
 
-func (s *LocalStart) GetConfig() *Config {
+func (s *LocalStart) GetConfig() *config.Config {
 	return &s.c
 }
 
@@ -101,27 +105,32 @@ func (s *LocalStart) HonestRun() {
 	}
 
 	//run a consensus protocol, here is a send protocol for example
-	/*
-		if s.c.MyID == 1 {
-			err := core.Send(&pb.Message{
-				Id:       "Send_1",
-				Sender:   1,
-				Receiver: 2,
-				Data:     []byte("what are you doing"),
-			}, s)
-			if err != nil {
-				s.l.Fatalf("send error: %s", err.Error())
-			}
-			s.l.Print("I'm id 1 node, I send: what are you doing")
+	// generate Data random
+	if s.c.MyID == 1 {
+		TX := 250
+		num := s.c.Txnum
+		data := make([]byte, num*TX)
+		n, err := rand.Read(data)
+		if err != nil {
+			s.l.Fatalf("random read data fail: %s", err.Error())
 		}
+		if n != num*TX {
+			s.l.Fatal("fail to read enough bytes")
+		}
+		s.l.Infof("input message's length is %d", len(data))
+		Benchmark.Begin("testRBC", s.c.MyID)
+		go rbc.RBCBroadcast(&pb.Message{
+			Id:       "testRBC",
+			Sender:   1,
+			Receiver: 0,
+			Data:     data,
+		}, s)
+	}
 
-		if s.c.MyID == 2 {
-			m, err := core.Receive(s.pig.GetRootPID("Send_1"))
-			if err != nil {
-				s.l.Fatal("receive error")
-			}
-			s.l.Print("I'm id 2 node , I receive", m)
-		}
-	*/
+	_, err = rbc.RBCDeliver("testRBC", s)
+	if err != nil {
+		s.l.Error("RBC deliver test fail: %s", err.Error())
+	}
+	Benchmark.End("testRBC", s.c.MyID)
 	wg.Done()
 }

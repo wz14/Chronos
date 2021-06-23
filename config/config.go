@@ -20,6 +20,7 @@ type Config struct {
 	IpList   []string `yaml:"IpList"`
 	PortList []int    `yaml:"PortList"`
 	Isremote bool     `yaml:"Isremote"`
+	Txnum    int      `yaml:"Txnum"`
 	// judge if execute read config function before
 	// default is false in golang structure declare
 	isRead bool

@@ -1,8 +1,8 @@
-package RBC
+package rbc
 
 import (
-	"acc/RBC/mock"
 	"acc/pb"
+	"acc/rbc/mock"
 	"bytes"
 	"testing"
 )
