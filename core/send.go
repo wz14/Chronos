@@ -35,11 +35,12 @@ func Send(value *pb.Message, s config.Start) error {
 	return nil
 }
 
-func Receive(pid *idchannel.PrimitiveID, _ config.Start) (*pb.Message, error) {
-	s := Sender{
-		pid: pid,
+func Receive(pid string, s config.Start) (*pb.Message, error) {
+	p := s.Getpig().GetRootPID(pid)
+	sender := Sender{
+		pid: p,
 	}
-	return s.Receive()
+	return sender.Receive()
 }
 
 type Sender struct {

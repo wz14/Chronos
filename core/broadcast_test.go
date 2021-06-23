@@ -59,7 +59,7 @@ func TestBroadCast(t *testing.T) {
 
 		if true {
 			t.Logf("enter receiver routine %d", s.C.MyID)
-			m, err := Receive(s.Pig.GetRootPID("BC_1"), &s)
+			m, err := Receive("BC_1", &s)
 			if err != nil {
 				t.Fatalf("receive error: %s", err.Error())
 			}

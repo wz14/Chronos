@@ -57,7 +57,7 @@ func TestSend(t *testing.T) {
 
 		if smock.C.MyID == 2 {
 			t.Log("run this")
-			m, err := Receive(smock.Pig.GetRootPID("Send_1"), &smock)
+			m, err := Receive("Send_1", &smock)
 			if err != nil {
 				t.Fatalf("receive error: %s", err.Error())
 			}

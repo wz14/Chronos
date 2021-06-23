@@ -47,7 +47,7 @@ func (s *LocalStart) GetConfig() *Config {
 func (s *LocalStart) CopySelf(id int) LocalStart {
 	newc := s.c
 	newc.MyID = id
-	return LocalStart{c: newc}
+	return LocalStart{c: newc, l: logger.NewLoggerWithID("main", id)}
 }
 
 func (s *LocalStart) Run() {

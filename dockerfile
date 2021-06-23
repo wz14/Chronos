@@ -15,6 +15,6 @@ COPY . /$Name
 
 ENV ID=0
 
-RUN make test && make build
+RUN make test
 
-ENTRYPOINT ["./build/start"]
+# ENTRYPOINT ["./build/start"]

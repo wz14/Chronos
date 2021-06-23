@@ -8,6 +8,7 @@ build:
 test:
 	go test ./config
 	go test ./core
+	go test ./RBC
 
 .PHONY: clean
 clean:
