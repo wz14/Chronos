@@ -25,7 +25,7 @@ func TestConfig_ReadConfig2(t *testing.T) {
 		t.Error("isRead set error")
 	}
 
-	if c.Isremote != true {
+	if c.Isremote != false {
 		t.Error("isremote set error")
 	}
 

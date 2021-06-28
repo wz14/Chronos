@@ -1,15 +1,14 @@
 package rbc
 
 import (
+	"acc/config"
 	"acc/pb"
-	"acc/rbc/mock"
 	"bytes"
 	"testing"
 )
 
 func TestBrachaRBC(t *testing.T) {
-	s := mock.NewLocalStart()
-	s.MockRun(func(s *mock.LocalStart) {
+	s := config.NewLocalStart(func(s config.Start) {
 		pig := s.Getpig()
 		nig := s.Getnig()
 		config := s.GetConfig()
@@ -42,5 +41,6 @@ func TestBrachaRBC(t *testing.T) {
 		if !bytes.Equal([]byte("you are welcome"), mes.Data) {
 			t.Errorf("mes.Data is %s", mes.Data)
 		}
-	})
+	}, "./mock/config1.yaml")
+	s.Run()
 }

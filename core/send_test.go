@@ -1,63 +1,30 @@
 package core
 
 import (
-	"acc/core/mock"
-	"acc/idchannel"
+	"acc/config"
 	"acc/pb"
 	"bytes"
-	"google.golang.org/grpc"
-	"log"
-	"net"
-	"strconv"
-	"sync"
 	"testing"
-	"time"
 )
 
 func TestSend(t *testing.T) {
-	t.Log("is it run?")
-	s := mock.NewStart()
-	s.MockRun(func(smock mock.Start, wg *sync.WaitGroup) {
-		t.Log("is it run?")
-		lis, err := net.Listen("tcp", ":"+strconv.Itoa(smock.C.PortList[smock.C.MyID]))
-		if err != nil {
-			t.Fatalf("tcp port open fail: %s in %d server", err, smock.C.MyID)
-		}
-		defer lis.Close()
-		server := grpc.NewServer()
-
-		smock.Pig, err = idchannel.NewPIDGroup(&smock.C)
-		if err != nil {
-			log.Fatalf("primitive group create fail: %s", err.Error())
-		}
-
-		pb.RegisterNodeConServer(server, idchannel.NewClassifier(&smock.C, smock.C.MyID, smock.Pig))
-		go server.Serve(lis)
-
-		// wait time
-		time.Sleep(1 * time.Second)
-
-		// create id group
-		smock.Nig, err = idchannel.NewIDGroup(&smock.C)
-		if err != nil {
-			t.Fatalf("group create fail: %s", err.Error())
-		}
-		t.Log("is it run?")
-		if smock.C.MyID == 1 {
+	nls := config.NewLocalStart(func(s config.Start) {
+		conf := s.GetConfig()
+		if conf.MyID == 1 {
 			err := Send(&pb.Message{
 				Id:       "Send_1",
 				Sender:   1,
 				Receiver: 2,
 				Data:     []byte("what are you doing"),
-			}, &smock)
+			}, s)
 			if err != nil {
 				t.Fatalf("send error: %s", err.Error())
 			}
 		}
 
-		if smock.C.MyID == 2 {
+		if conf.MyID == 2 {
 			t.Log("run this")
-			m, err := Receive("Send_1", &smock)
+			m, err := Receive("Send_1", s)
 			if err != nil {
 				t.Fatalf("receive error: %s", err.Error())
 			}
@@ -75,8 +42,8 @@ func TestSend(t *testing.T) {
 			}
 		}
 
-		wg.Done()
-	})
+	}, "./mock/config1.yaml")
+	nls.Run()
 }
 
 func TestReceive(t *testing.T) {

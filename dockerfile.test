@@ -15,7 +15,6 @@ COPY . /$Name
 
 ENV ID=0
 
-# TODO: build test file and run test in entrypoint
-RUN make test
+RUN make buildtest
 
-# ENTRYPOINT ["./build/start"]
+ENTRYPOINT ["/usr/bin/make","runtest"]
