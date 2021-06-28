@@ -66,11 +66,12 @@ func (m *MMRABA) Decided(message *pb.Message) (*pb.Message, error) {
 	// go roundDecided (pid.0)
 	// message <- pid.0
 	// r = r + 1
+	initRoundpid := m.pig.GetInitRoundPID(m.rootpid)
 	rm := &roundmmr{
-		pid:       m.rootpid,
+		pid:       initRoundpid,
 		nig:       m.nig,
 		pig:       m.pig,
-		l:         m.l,
+		l:         logger.NewLoggerWithID(initRoundpid.Id, m.c.MyID),
 		c:         m.c,
 		s:         m.s,
 		sid:       m.sid,
@@ -84,20 +85,19 @@ func (m *MMRABA) Decided(message *pb.Message) (*pb.Message, error) {
 	}
 	rm.roundDecided()
 	// handle always decides mechaism
-	ch := make(chan *pb.Message, 0)
 	go func() {
 		isDecided := false
-		for mess := range m.rootpid.C {
+		for mess := range initRoundpid.C {
 			if !isDecided {
-				ch <- mess
+				m.rootpid.C <- mess
 				isDecided = true
 			} else {
 				m.l.Infof("mmr aba output mes: %s, but discard", string(mess.Data))
 			}
 		}
 	}()
-	mes := <-ch
-	m.l.Infof("mmr aba output mes: %s", string(mes.Data))
+	mes := <-m.rootpid.C
+	m.l.Infof("mmr aba output first mes: %s", string(mes.Data))
 	return mes, nil
 }
 
@@ -139,8 +139,8 @@ func (m *roundmmr) roundDecided() {
 	//(pid.0 <- message ||
 	// new round
 	//	go roundDecide(pid.1);message <- pid.1;pid.0 <- message)
-	mes := <-m.pid.C
-	m.pid.C <- mes
+	// mes := <-m.pid.C
+	// m.pid.C <- mes
 }
 
 func (m *roundmmr) bvBroadcast() {
@@ -351,12 +351,12 @@ func (m *roundmmr) ccDeliver() {
 				m.nexest = coin
 			}
 			// continue next round
-			cpid := m.pig.GetChildPID("0", m.pid)
+			npid := m.pig.GetNextRoundPID(m.pid)
 			rm := &roundmmr{
-				pid:       cpid,
+				pid:       npid,
 				nig:       m.nig,
 				pig:       m.pig,
-				l:         logger.NewLoggerWithID(cpid.Id, m.c.MyID),
+				l:         logger.NewLoggerWithID(npid.Id, m.c.MyID),
 				c:         m.c,
 				s:         m.s,
 				sid:       m.nextsid,
@@ -370,7 +370,7 @@ func (m *roundmmr) ccDeliver() {
 			}
 
 			go rm.roundDecided()
-			for v := range cpid.C {
+			for v := range npid.C {
 				m.pid.C <- v
 			}
 			return
