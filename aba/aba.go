@@ -7,8 +7,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-var zero = []byte("0")
-var one = []byte("1")
+var Zero = []byte("0")
+var One = []byte("1")
 var ABAError = "node %d ABA send error in %s"
 
 func ABADecided(value *pb.Message, s config.Start) (*pb.Message, error) {

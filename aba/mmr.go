@@ -145,12 +145,12 @@ func (m *roundmmr) roundDecided() {
 
 func (m *roundmmr) bvBroadcast() {
 	childp := m.pig.GetChildPID("bvB", m.pid)
-	if bytes.Equal(m.est, one) {
+	if bytes.Equal(m.est, One) {
 		m.mu.Lock()
 		m.isBVone = true
 		m.mu.Unlock()
 	}
-	if bytes.Equal(m.est, zero) {
+	if bytes.Equal(m.est, Zero) {
 		m.mu.Lock()
 		m.isBVzero = true
 		m.mu.Unlock()
@@ -173,9 +173,9 @@ func (m *roundmmr) bvDeliver() {
 			m.l.Error("receive bv value fail")
 		}
 
-		if bytes.Equal(mes.Data, one) {
+		if bytes.Equal(mes.Data, One) {
 			onecount += 1
-		} else if bytes.Equal(mes.Data, zero) {
+		} else if bytes.Equal(mes.Data, Zero) {
 			zerocount += 1
 		} else {
 			m.l.Error("receive undefined value (not 0/1)")
@@ -200,7 +200,7 @@ func (m *roundmmr) bvDeliver() {
 					Id:       childp.Id,
 					Sender:   uint32(m.c.MyID),
 					Receiver: 0,
-					Data:     one,
+					Data:     One,
 				}, m.s)
 
 			}
@@ -221,7 +221,7 @@ func (m *roundmmr) bvDeliver() {
 					Id:       childp.Id,
 					Sender:   uint32(m.c.MyID),
 					Receiver: 0,
-					Data:     zero,
+					Data:     Zero,
 				}, m.s)
 
 			}
@@ -231,8 +231,8 @@ func (m *roundmmr) bvDeliver() {
 		if zerocount >= m.c.F*2+1 {
 			m.l.Infof("0 b_val enough and add to binvalues")
 			m.mu.Lock()
-			if !bytes.Contains(m.binvalues, zero) {
-				m.binvalues = append(m.binvalues, zero...)
+			if !bytes.Contains(m.binvalues, Zero) {
+				m.binvalues = append(m.binvalues, Zero...)
 			}
 			m.mu.Unlock()
 		}
@@ -240,8 +240,8 @@ func (m *roundmmr) bvDeliver() {
 		if onecount >= m.c.F*2+1 {
 			m.l.Infof("1 b_val enough and add to binvalues")
 			m.mu.Lock()
-			if !bytes.Contains(m.binvalues, one) {
-				m.binvalues = append(m.binvalues, one...)
+			if !bytes.Contains(m.binvalues, One) {
+				m.binvalues = append(m.binvalues, One...)
 			}
 			m.mu.Unlock()
 		}
@@ -257,19 +257,19 @@ func (m *roundmmr) bvDeliver() {
 
 		m.l.Infof("broadcat aux message")
 		childp2 := m.pig.GetChildPID("aux", m.pid)
-		if bytes.Contains(m.binvalues, one) {
+		if bytes.Contains(m.binvalues, One) {
 			core.BroadCast(&pb.Message{
 				Id:       childp2.Id,
 				Sender:   uint32(m.c.MyID),
 				Receiver: 0,
-				Data:     one,
+				Data:     One,
 			}, m.s)
-		} else if bytes.Contains(m.binvalues, zero) {
+		} else if bytes.Contains(m.binvalues, Zero) {
 			core.BroadCast(&pb.Message{
 				Id:       childp2.Id,
 				Sender:   uint32(m.c.MyID),
 				Receiver: 0,
-				Data:     zero,
+				Data:     Zero,
 			}, m.s)
 		} else {
 			m.l.Error("code error")

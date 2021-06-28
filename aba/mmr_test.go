@@ -16,13 +16,13 @@ func TestNewMMRABA(t *testing.T) {
 			Id:       "testMMR1",
 			Sender:   uint32(conf.MyID),
 			Receiver: 0,
-			Data:     one,
+			Data:     One,
 		}, s)
 		if err != nil {
 			t.Errorf("some error in decided one: %s", err.Error())
 			return
 		}
-		if !bytes.Equal(m.Data, one) {
+		if !bytes.Equal(m.Data, One) {
 			t.Error("all nodes input 1 but output 0")
 		}
 	}, "./mock/config1.yaml")
@@ -37,13 +37,13 @@ func TestNewMMRABA2(t *testing.T) {
 			Id:       "testMMR2",
 			Sender:   uint32(conf.MyID),
 			Receiver: 0,
-			Data:     zero,
+			Data:     Zero,
 		}, s)
 		if err != nil {
 			t.Errorf("some error in decided zero: %s", err.Error())
 			return
 		}
-		if !bytes.Equal(m.Data, zero) {
+		if !bytes.Equal(m.Data, Zero) {
 			t.Error("all nodes input 0 but output 1")
 		}
 
@@ -62,21 +62,21 @@ func TestNewMMRABA3(t *testing.T) {
 				Id:       "testMMR3",
 				Sender:   uint32(conf.MyID),
 				Receiver: 0,
-				Data:     one,
+				Data:     One,
 			}, s)
 		} else { // 3
 			m, err = ABADecided(&pb.Message{
 				Id:       "testMMR3",
 				Sender:   uint32(conf.MyID),
 				Receiver: 0,
-				Data:     zero,
+				Data:     Zero,
 			}, s)
 		}
 		if err != nil {
 			t.Errorf("some error in decided zero: %s", err.Error())
 			return
 		}
-		if !bytes.Equal(m.Data, one) {
+		if !bytes.Equal(m.Data, One) {
 			t.Error("all nodes input 0 but output 1")
 		}
 
@@ -94,21 +94,21 @@ func TestNewMMRABA4(t *testing.T) {
 				Id:       "testMMR4",
 				Sender:   uint32(conf.MyID),
 				Receiver: 0,
-				Data:     one,
+				Data:     One,
 			}, s)
 		} else { // 2, 3
 			m, err = ABADecided(&pb.Message{
 				Id:       "testMMR4",
 				Sender:   uint32(conf.MyID),
 				Receiver: 0,
-				Data:     zero,
+				Data:     Zero,
 			}, s)
 		}
 		if err != nil {
 			t.Errorf("some error in decided: %s", err.Error())
 			return
 		}
-		if !(bytes.Equal(m.Data, one) || bytes.Equal(m.Data, zero)) {
+		if !(bytes.Equal(m.Data, One) || bytes.Equal(m.Data, Zero)) {
 			t.Error("nodes output weired values ")
 		}
 
