@@ -33,9 +33,11 @@ type PrimitiveID struct {
 }
 
 func (p *PIDGroup) GetRootPID(name string) *PrimitiveID {
-	pid, ok := p.PIDmap.Load(name)
-	if !ok {
-		pid = p.createPID(name)
+	pid, loaded := p.PIDmap.LoadOrStore(name, p.createPID(name))
+	if loaded {
+		p.l.Infof("create %s channel", name)
+	} else {
+		p.l.Infof("create %s channel but exist", name)
 	}
 	// type convert
 	return pid.(*PrimitiveID)
@@ -67,12 +69,10 @@ func (p *PIDGroup) GetNextRoundPID(pid *PrimitiveID) *PrimitiveID {
 }
 
 func (p *PIDGroup) createPID(name string) *PrimitiveID {
-	p.l.Infof("create %s channel", name)
 	c := make(chan *pb.Message, MAXMESSAGE)
 	pid := &PrimitiveID{
 		Id: name,
 		C:  c,
 	}
-	p.PIDmap.Store(name, pid)
 	return pid
 }
