@@ -287,6 +287,7 @@ func (m *roundmmr) auxDeliver() {
 		if err != nil {
 			m.l.Error("recieve aux mes error")
 		}
+		m.l.Infof("receive aux message from %d", mes.Sender)
 		auxcount += 1
 		if !bytes.Contains(values, mes.Data) {
 			// may check mes.Data is one or zero
@@ -295,6 +296,7 @@ func (m *roundmmr) auxDeliver() {
 		//TODO: neet do check all n-t messages is in bin_values
 
 		if !isRandomCoin && auxcount >= m.c.N-m.c.F {
+			m.l.Infof("collect enough aux message, values: %s", string(values))
 			m.values <- values
 			isRandomCoin = true
 			id := m.pig.GetChildPID("ccoin", m.pid).Id
@@ -323,6 +325,7 @@ func (m *roundmmr) ccDeliver() {
 			m.l.Errorf("receive fail in ccoin: %s", err.Error())
 			continue
 		}
+		m.l.Infof("receive ccoin from %d", mes.Sender)
 		//combine sigs to get common coin
 		sigs = append(sigs, mes.Data)
 		if len(sigs) == m.s.GetCConfig().T {
