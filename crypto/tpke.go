@@ -4,6 +4,9 @@ package crypto
 // file1: https://github.com/DE-labtory/cleisthenes/tpke/threshold_encrpytion.go
 // file2: https://github.com/DE-labtory/cleisthenes/tpke/threshold_encryption_test.go
 // with Apache 2.0 license
+//
+// Copyright 2019 DE-labtory
+//
 // Modify: combine file1 and file2, add keyGen algorithm,
 //		   rename interface name to avoid repetition with
 //		   this project package name
