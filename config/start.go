@@ -11,5 +11,6 @@ type Start interface {
 	Getnig() *idchannel.NodeIDGroup
 	Getpig() *idchannel.PIDGroup
 	GetConfig() *Config
-	GetCConfig() *crypto.CCconfig
+	GetCConfig() *crypto.CCconfig // get common coin
+	GetEConfig() *crypto.TPKE
 }

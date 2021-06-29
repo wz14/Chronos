@@ -33,6 +33,7 @@ type LocalStart struct {
 	pig *idchannel.PIDGroup
 	l   *logger.Logger
 	cc  *crypto.CCconfig
+	e   *crypto.TPKE
 	f   func(s Start)
 }
 
@@ -52,14 +53,20 @@ func (s *LocalStart) GetCConfig() *crypto.CCconfig {
 	return s.cc
 }
 
-func (s *LocalStart) CopySelf(id int, cconfig *crypto.CCconfig) LocalStart {
+func (s *LocalStart) GetEConfig() *crypto.TPKE {
+	return s.e
+}
+
+func (s *LocalStart) CopySelf(id int, cconfig *crypto.CCconfig, tpke *crypto.TPKE) LocalStart {
 	newc := s.c
 	newc.MyID = id
 	return LocalStart{
 		c:  newc,
 		l:  logger.NewLoggerWithID("main", id),
 		f:  s.f,
-		cc: cconfig}
+		cc: cconfig,
+		e:  tpke,
+	}
 }
 
 func (s *LocalStart) Run() {
@@ -70,12 +77,15 @@ func (s *LocalStart) Run() {
 		s.l.Fatalf("common coin init fail: %s", err.Error())
 	}
 
+	// init tpke
+	tpkes := crypto.NewTPKE(s.c.N, s.c.F)
+
 	if s.c.Isremote {
 		s.l.Fatal("no implement remote deployment setting")
 	}
 	wg.Add(s.c.N)
 	for i := 0; i < s.c.N; i++ {
-		news := s.CopySelf(i, cconfigs[i])
+		news := s.CopySelf(i, cconfigs[i], tpkes[i])
 		go news.HonestRun()
 	}
 	wg.Wait()
