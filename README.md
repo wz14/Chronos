@@ -19,7 +19,7 @@ is connect to parent protocol by `.`.
 
 ### LICENSE
 
-Licensed by GPL.
+Licensed by Apache 2.0.
 
 
 
