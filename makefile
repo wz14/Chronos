@@ -12,6 +12,7 @@ buildtest:
 	go test -c -o build/rbc.test ./rbc
 	go test -c -o build/aba.test ./aba
 	go test -c -o build/idchannel.test ./idchannel
+	go test -c -o build/acs.test ./acs
 
 .PHONY: runtest
 runtest:
@@ -20,6 +21,7 @@ runtest:
 	AACDEUBG=1 && cd ./build && ./rbc.test
 	AACDEUBG=1 && cd ./build && ./aba.test
 	AACDEUBG=1 && cd ./build && ./idchannel.test
+	AACDEUBG=1 && cd ./build && ./acs.test
 
 .PHONY: clean
 clean:
