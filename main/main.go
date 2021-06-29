@@ -1,12 +1,13 @@
 package main
 
 import (
-	"acc/Benchmark"
+	"acc/benchmark"
+	"acc/config"
 )
 
 func main() {
 	// command process or something
-	start := NewLocalStart()
+	start := config.NewLocalStart(f, "./config.yaml")
 	start.Run()
-	Benchmark.BenchmarkOuput()
+	_ = benchmark.BenchmarkOuput()
 }
