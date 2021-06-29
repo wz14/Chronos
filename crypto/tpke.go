@@ -12,7 +12,7 @@ package crypto
 //		   this project package name
 
 import (
-	tpk "github.com/DE-labtory/tpke"
+	tpk "github.com/WangZhuo2000/tpke"
 	"strconv"
 )
 
