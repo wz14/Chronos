@@ -14,6 +14,7 @@ buildtest:
 	go test -c -o build/idchannel.test ./idchannel
 	go test -c -o build/acs.test ./acs
 	go test -c -o build/crypto.test ./crypto
+	go test -c -o build/consensus.test ./consensus
 
 .PHONY: runtest
 runtest:
@@ -24,6 +25,7 @@ runtest:
 	AACDEUBG=1 && cd ./build && ./idchannel.test
 	AACDEUBG=1 && cd ./build && ./acs.test
 	AACDEUBG=1 && cd ./build && ./crypto.test
+	AACDEUBG=1 && cd ./build && ./consensus.test
 
 .PHONY: clean
 clean:
