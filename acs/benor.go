@@ -63,7 +63,13 @@ func (b *BenorACS) Decided(message *pb.Message) ([]*pb.Message, error) {
 		if d == 1 {
 			v := <-b.rbcDeliver[index]
 			b.l.Infof("get message from %d RBC", index)
-			output = append(output, v)
+			// unmarshal v
+			d := pb.Message{}
+			err := proto.Unmarshal(v.Data, &d)
+			if err != nil {
+				b.l.Errorf("unmarshal fail")
+			}
+			output = append(output, &d)
 		}
 	}
 	b.l.Infof("output %d things", len(output))

@@ -21,7 +21,8 @@ func TestNewBenorACS(t *testing.T) {
 			t.Error("decide fail")
 		}
 		for i, m := range ml {
-			if !bytes.Contains(m.Data, []byte("mockdata")) {
+			if !bytes.Equal(m.Data, []byte("mockdata"+
+				strconv.FormatUint(uint64(m.Sender), 10))) {
 				t.Error("acs decided bad value")
 			}
 			t.Logf("%d values: %s", i, string(m.Data))
