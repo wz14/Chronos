@@ -3,6 +3,8 @@ module acc
 go 1.14
 
 require (
+	github.com/DE-labtory/cleisthenes v0.1.0-alpha
+	github.com/DE-labtory/tpke v0.0.0-20190710130448-03a30729cfa9
 	github.com/golang/protobuf v1.4.2
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
