@@ -120,14 +120,17 @@ func (t *TPKE) Enc(msg []byte) []byte {
 	return decshare
 }
 
-func (t *TPKE) DecShare(ct []byte) DecryptionShare {
-	return t.tpke.DecShare(ct)
+func (t *TPKE) DecShare(ct []byte) []byte {
+	ds := t.tpke.DecShare(ct)
+	return ds[:]
 }
 
-func (t *TPKE) Dec(m map[int]DecryptionShare, ct []byte) []byte {
+func (t *TPKE) Dec(m map[int][]byte, ct []byte) []byte {
 	mm := map[string]DecryptionShare{}
 	for k, v := range m {
-		mm[strconv.Itoa(k)] = v
+		var arr DecryptionShare
+		copy(arr[:], v)
+		mm[strconv.Itoa(k)] = arr
 	}
 	msg, _ := t.tpke.Decrypt(mm, ct)
 	return msg
