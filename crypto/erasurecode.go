@@ -74,11 +74,11 @@ func Erasure(msg []byte, N, t int) ([][]byte, error) {
 }
 
 // Recover s includes at least t+1 []byte to recover
-// return msg
-func Recover(s [][]byte, N, t int) ([]byte, error) {
+// return msg, erasure codes hash, nil
+func Recover(s [][]byte, N, t int) ([]byte, []byte, error) {
 	threshold := t + 1
 	if len(s) < threshold {
-		return nil, errors.Errorf("too few part, need t+1 %d", threshold)
+		return nil, nil, errors.Errorf("too few part, need t+1 %d", threshold)
 	}
 
 	data := make([][]byte, N)
@@ -88,15 +88,16 @@ func Recover(s [][]byte, N, t int) ([]byte, error) {
 
 	var length uint64
 
+	var ecm *pb.ECMsg
 	for _, parts := range s {
-		ecm := &pb.ECMsg{}
+		ecm = &pb.ECMsg{}
 		err := proto.Unmarshal(parts, ecm)
 		if err != nil {
-			return nil, errors.Wrap(err, "unmarshal fail")
+			return nil, nil, errors.Wrap(err, "unmarshal fail")
 		}
 		if !VerifyTree(ecm.Merkleroot, ecm.Merklepath,
 			ecm.Merkleindex, ecm.ErasureCode) {
-			return nil, errors.Wrap(err, "verify merkle tree fail")
+			return nil, nil, errors.Wrap(err, "verify merkle tree fail")
 		}
 		data[ecm.Index] = ecm.ErasureCode
 		length = ecm.Msglength
@@ -104,16 +105,16 @@ func Recover(s [][]byte, N, t int) ([]byte, error) {
 
 	enc, err := reedsolomon.New(threshold, N-threshold)
 	if err != nil {
-		return nil, errors.Wrap(err, "create reed solomon fail")
+		return nil, nil, errors.Wrap(err, "create reed solomon fail")
 	}
 
 	err = enc.ReconstructData(data)
 	if err != nil {
-		return nil, errors.Wrap(err, "reconstruct data fail")
+		return nil, nil, errors.Wrap(err, "reconstruct data fail")
 	}
 
 	paddingmsg := bytes.Join(data[:threshold], []byte(""))
 
-	return paddingmsg[:length], nil
+	return paddingmsg[:length], ecm.Merkleroot, nil
 
 }

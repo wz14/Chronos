@@ -12,7 +12,7 @@ func TestErasure(t *testing.T) {
 		t.Fatalf("erasure generate fail: %s", err.Error())
 	}
 
-	msg, err := Recover(s, 4, 1)
+	msg, _, err := Recover(s, 4, 1)
 	if err != nil {
 		t.Fatalf("erasure recover fail: %s", err.Error())
 	}
@@ -29,7 +29,7 @@ func TestErasure2(t *testing.T) {
 		t.Fatalf("erasure generate fail: %s", err.Error())
 	}
 
-	msg, err := Recover(s[:2], 4, 1)
+	msg, _, err := Recover(s[:2], 4, 1)
 	if err != nil {
 		t.Fatalf("erasure recover fail: %s", err.Error())
 	}
@@ -45,7 +45,7 @@ func TestErasure3(t *testing.T) {
 		t.Fatalf("erasure generate fail: %s", err.Error())
 	}
 
-	msg, err := Recover(s[1:3], 4, 1)
+	msg, _, err := Recover(s[1:3], 4, 1)
 	if err != nil {
 		t.Fatalf("erasure recover fail: %s", err.Error())
 	}
@@ -61,7 +61,7 @@ func TestErasure4(t *testing.T) {
 		t.Fatalf("erasure generate fail: %s", err.Error())
 	}
 
-	msg, err := Recover([][]byte{s[0], s[3]}, 4, 1)
+	msg, _, err := Recover([][]byte{s[0], s[3]}, 4, 1)
 	if err != nil {
 		t.Fatalf("erasure recover fail: %s", err.Error())
 	}
@@ -77,7 +77,7 @@ func TestErasure5(t *testing.T) {
 		t.Fatalf("erasure generate fail: %s", err.Error())
 	}
 
-	msg, err := Recover(s[4:13], 32, 8)
+	msg, _, err := Recover(s[4:13], 32, 8)
 	if err != nil {
 		t.Fatalf("erasure recover fail: %s", err.Error())
 	}
