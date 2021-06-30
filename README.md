@@ -9,7 +9,8 @@ byzantine agreement and so on.
 
 ```
 docker build . -t AAC
-docker run AAC
+docker run AAC 2>&/dev/null  # without logs
+docker run AAC               # with logs
 ```
 
 ### Design of code
