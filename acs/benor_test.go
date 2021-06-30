@@ -11,12 +11,12 @@ import (
 func TestNewBenorACS(t *testing.T) {
 	nls := config.NewLocalStart(func(s config.Start) {
 		conf := s.GetConfig()
-		ml, err := ACSDecided(&pb.Message{
+		ml, err := ACSDecided(BENOR, &pb.Message{
 			Id:       "ACS1",
 			Sender:   uint32(conf.MyID),
 			Receiver: 0,
 			Data:     []byte("mockdata" + strconv.Itoa(conf.MyID)),
-		}, s)
+		}, s, nil)
 		if err != nil {
 			t.Error("decide fail")
 		}

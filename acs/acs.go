@@ -7,11 +7,21 @@ import (
 	"github.com/pkg/errors"
 )
 
-func ACSDecided(value *pb.Message, s config.Start) ([]*pb.Message, error) {
+type ACSTYPE int
+
+const (
+	BENOR ACSTYPE = 1
+	V     ACSTYPE = 2
+)
+
+// ACSDecided :if typ is BENOR, q is omit
+// else q is used to judge if transaction is valid
+func ACSDecided(typ ACSTYPE, value *pb.Message, s config.Start,
+	q func(message *pb.Message) bool) ([]*pb.Message, error) {
 	pig := s.Getpig()
 	pid := pig.GetRootPID(value.Id)
 
-	acs, err := NewACS(pid, s)
+	acs, err := NewACS(typ, pid, s, q)
 	if err != nil {
 		return nil, errors.Wrap(err, "create ACS fail")
 	}
@@ -24,15 +34,15 @@ func ACSDecided(value *pb.Message, s config.Start) ([]*pb.Message, error) {
 	return d, nil
 }
 
-func NewACS(pid *idchannel.PrimitiveID, s config.Start) (ACS, error) {
-	// version := "benor"
-	version := "benor"
-	if version == "benor" {
+func NewACS(typ ACSTYPE, pid *idchannel.PrimitiveID, s config.Start,
+	q func(message *pb.Message) bool) (ACS, error) {
+	if typ == BENOR {
 		return NewBenorACS(pid, s)
+	} else if typ == V {
+		return NewVACS(pid, s, q)
 	} else {
 		return nil, errors.New("no such version acs protocol")
 	}
-	return nil, nil
 }
 
 type ACS interface {
