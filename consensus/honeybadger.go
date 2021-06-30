@@ -10,6 +10,7 @@ import (
 	"acc/pb"
 	"github.com/golang/protobuf/proto"
 	"strconv"
+	"sync"
 )
 
 func NewHB(pid *idchannel.PrimitiveID, s config.Start) (Consen, error) {
@@ -21,6 +22,7 @@ func NewHB(pid *idchannel.PrimitiveID, s config.Start) (Consen, error) {
 		c:       conf,
 		s:       s,
 		l:       logger.NewLoggerWithID("HB", conf.MyID),
+		enclock: sync.Mutex{},
 	}, nil
 }
 
@@ -31,6 +33,7 @@ type HB struct {
 	c       *config.Config
 	s       config.Start
 	l       *logger.Logger
+	enclock sync.Mutex
 }
 
 func (h *HB) Propose(value *pb.Message) ([]*pb.Message, error) {
@@ -43,7 +46,9 @@ func (h *HB) Propose(value *pb.Message) ([]*pb.Message, error) {
 		h.l.Error("marshal fail")
 	}
 
+	h.enclock.Lock()
 	ct := h.e.Enc(byt)
+	h.enclock.Unlock()
 
 	msgs := h.acs(&pb.Message{
 		Id:       cpid.Id,
@@ -56,7 +61,7 @@ func (h *HB) Propose(value *pb.Message) ([]*pb.Message, error) {
 }
 
 func (h *HB) acs(value *pb.Message) []*pb.Message {
-	values, err := acs.ACSDecided(value, h.s)
+	values, err := acs.ACSDecided(acs.BENOR, value, h.s, nil)
 	if err != nil {
 		h.l.Errorf("ACS run fail: %s", err.Error())
 	}
@@ -67,11 +72,14 @@ func (h *HB) acs(value *pb.Message) []*pb.Message {
 		childp := h.pig.GetChildPID("Dec["+strconv.Itoa(i)+"]", h.rootpid)
 
 		go func() {
+			h.enclock.Lock()
+			decShare := h.e.DecShare(v.Data)
+			h.enclock.Unlock()
 			core.BroadCast(&pb.Message{
 				Id:       childp.Id,
 				Sender:   uint32(h.c.MyID),
 				Receiver: 0,
-				Data:     h.e.DecShare(v.Data),
+				Data:     decShare,
 			}, h.s)
 		}()
 
@@ -84,7 +92,9 @@ func (h *HB) acs(value *pb.Message) []*pb.Message {
 				}
 				m[int(decshare.Sender)] = decshare.Data
 				if len(m) >= h.c.F+1 {
+					h.enclock.Lock()
 					byts := h.e.Dec(m, v.Data)
+					h.enclock.Unlock()
 					// unmarshal realv
 					realv := &pb.Message{}
 					err := proto.Unmarshal(byts, realv)
