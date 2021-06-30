@@ -83,7 +83,7 @@ func (b *BenorACS) rbcb(message *pb.Message) {
 	}
 	rbcpid := b.pig.GetChildPID("RBC"+strconv.Itoa(b.c.MyID), b.rootpid)
 	b.l.Infof("RBC broadcast")
-	rbc.RBCBroadcast(&pb.Message{
+	rbc.RBCBroadcast(rbc.AVID, &pb.Message{
 		Id:       rbcpid.Id,
 		Sender:   uint32(b.c.MyID),
 		Receiver: 0,
@@ -95,7 +95,7 @@ func (b *BenorACS) rbcd() {
 	for i := 0; i < b.c.N; i++ {
 		go func(j int) {
 			rbcpid := b.pig.GetChildPID("RBC"+strconv.Itoa(j), b.rootpid)
-			mes, err := rbc.RBCDeliver(rbcpid.Id, b.s)
+			mes, err := rbc.RBCDeliver(rbc.AVID, rbcpid.Id, b.s)
 			if err != nil {
 				b.l.Errorf("receive from RBC fail: %s", err.Error())
 			}

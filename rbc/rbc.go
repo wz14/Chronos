@@ -10,7 +10,14 @@ import (
 var RBCSError = "node %d RBC send error in %s"
 var RBCDError = "node deliver error in %s"
 
-func RBCBroadcast(value *pb.Message, s config.Start) error {
+type RBCTYPE int
+
+const (
+	BRACHA RBCTYPE = 1
+	AVID   RBCTYPE = 2
+)
+
+func RBCBroadcast(typ RBCTYPE, value *pb.Message, s config.Start) error {
 	nig := s.Getnig()
 	pig := s.Getpig()
 	pid := pig.GetRootPID(value.Id)
@@ -19,7 +26,7 @@ func RBCBroadcast(value *pb.Message, s config.Start) error {
 		return errors.Wrapf(err, RBCSError, value.Sender, pid.Id)
 	}
 
-	rbc, err := NewRBC(senderID, pid, s)
+	rbc, err := NewRBC(typ, senderID, pid, s)
 	if err != nil {
 		return errors.Wrapf(err, RBCSError, value.Sender, pid.Id)
 	}
@@ -32,10 +39,10 @@ func RBCBroadcast(value *pb.Message, s config.Start) error {
 	return nil
 }
 
-func RBCDeliver(id string, s config.Start) (*pb.Message, error) {
+func RBCDeliver(typ RBCTYPE, id string, s config.Start) (*pb.Message, error) {
 	pig := s.Getpig()
 	pid := pig.GetRootPID(id)
-	rbc, err := NewRBC(nil, pid, s)
+	rbc, err := NewRBC(typ, nil, pid, s)
 	if err != nil {
 		return nil, errors.Wrapf(err, RBCDError, pid.Id)
 	}
@@ -48,14 +55,15 @@ func RBCDeliver(id string, s config.Start) (*pb.Message, error) {
 	return m, nil
 }
 
-func NewRBC(sender *idchannel.NodeID, pid *idchannel.PrimitiveID,
+func NewRBC(typ RBCTYPE, sender *idchannel.NodeID, pid *idchannel.PrimitiveID,
 	s config.Start) (RBC, error) {
 	// may read from config
-	version := "bracha"
-	if version == "bracha" {
+	if typ == BRACHA {
 		return NewBrachaRBC(sender, pid, s), nil
+	} else if typ == AVID {
+		return NewAVIDRBC(sender, pid, s), nil
 	} else {
-		return nil, nil
+		return nil, errors.New("no such type RBC")
 	}
 }
 
