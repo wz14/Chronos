@@ -113,7 +113,7 @@ func (b *SACS) rbcd() {
 			if err != nil {
 				b.l.Errorf("unmarshal fail in tmp")
 			}
-			b.l.Infof("tmpmessage: %s", string(tmp.Data))
+			//b.l.Infof("tmpmessage: %s", string(tmp.Data))
 			if b.q(tmp) {
 				b.l.Infof("satisfy sacs predicate")
 				b.rbc1Notify <- j
