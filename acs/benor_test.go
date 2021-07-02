@@ -16,7 +16,7 @@ func TestNewBenorACS(t *testing.T) {
 			Sender:   uint32(conf.MyID),
 			Receiver: 0,
 			Data:     []byte("mockdata" + strconv.Itoa(conf.MyID)),
-		}, s, nil)
+		}, s, nil, nil)
 		if err != nil {
 			t.Error("decide fail")
 		}

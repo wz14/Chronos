@@ -12,16 +12,18 @@ type ACSTYPE int
 const (
 	BENOR ACSTYPE = 1
 	V     ACSTYPE = 2
+	S     ACSTYPE = 3
 )
 
 // ACSDecided :if typ is BENOR, q is omit
 // else q is used to judge if transaction is valid
 func ACSDecided(typ ACSTYPE, value *pb.Message, s config.Start,
-	q func(message *pb.Message) bool) ([]*pb.Message, error) {
+	q func(message *pb.Message) bool,
+	control chan interface{}) ([]*pb.Message, error) {
 	pig := s.Getpig()
 	pid := pig.GetRootPID(value.Id)
 
-	acs, err := NewACS(typ, pid, s, q)
+	acs, err := NewACS(typ, pid, s, q, control)
 	if err != nil {
 		return nil, errors.Wrap(err, "create ACS fail")
 	}
@@ -35,11 +37,13 @@ func ACSDecided(typ ACSTYPE, value *pb.Message, s config.Start,
 }
 
 func NewACS(typ ACSTYPE, pid *idchannel.PrimitiveID, s config.Start,
-	q func(message *pb.Message) bool) (ACS, error) {
+	q func(message *pb.Message) bool, control chan interface{}) (ACS, error) {
 	if typ == BENOR {
 		return NewBenorACS(pid, s)
 	} else if typ == V {
 		return NewVACS(pid, s, q)
+	} else if typ == S {
+		return NewSACS(pid, s, q, control)
 	} else {
 		return nil, errors.New("no such version acs protocol")
 	}

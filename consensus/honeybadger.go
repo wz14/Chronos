@@ -61,7 +61,7 @@ func (h *HB) Propose(value *pb.Message) ([]*pb.Message, error) {
 }
 
 func (h *HB) acs(value *pb.Message) []*pb.Message {
-	values, err := acs.ACSDecided(acs.BENOR, value, h.s, nil)
+	values, err := acs.ACSDecided(acs.BENOR, value, h.s, nil, nil)
 	if err != nil {
 		h.l.Errorf("ACS run fail: %s", err.Error())
 	}
