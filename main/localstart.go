@@ -15,7 +15,7 @@ func f(s config.Start) {
 	//run a consensus protocol, here is a send protocol for example
 	// generate Data random
 	conf := s.GetConfig()
-	benchmark.Create("HB")
+	benchmark.Create("CHOS")
 	TX := 250
 	num := conf.Txnum
 	data := make([]byte, num*TX)
@@ -27,17 +27,17 @@ func f(s config.Start) {
 		log.Fatal("fail to read enough bytes")
 	}
 	log.Infof("input message's length is %d", len(data))
-	benchmark.Begin("HB", conf.MyID)
+	benchmark.Begin("CHOS", conf.MyID)
 
-	results, err := consensus.Consensus(&pb.Message{
-		Id:       "HoneyBadger",
-		Sender:   1,
+	results, _, err := consensus.Consensus(consensus.CHOSCon, &pb.Message{
+		Id:       "chronos",
+		Sender:   uint32(conf.MyID),
 		Receiver: 0,
 		Data:     data,
 	}, s)
 
 	consenedTXnum := len(results) * len(results[0].Data) / TX
 	log.Infof("results length: %d, tx nums: %d", len(results), consenedTXnum)
-	benchmark.End("HB", conf.MyID)
-	benchmark.Nums("HB", conf.MyID, consenedTXnum)
+	benchmark.End("CHOS", conf.MyID)
+	benchmark.Nums("CHOS", conf.MyID, consenedTXnum)
 }
