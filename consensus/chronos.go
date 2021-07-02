@@ -340,9 +340,9 @@ func (h *CHOS) rollback() []int {
 	for {
 		select {
 		case k := <-h.acs1Notify:
-			l[k] = 2
-		case k := <-h.acs0Notify:
 			l[k] = 1
+		case k := <-h.acs0Notify:
+			l[k] = 2
 			acs1count += 1
 		}
 		acscount += 1
