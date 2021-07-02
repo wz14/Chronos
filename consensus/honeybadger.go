@@ -36,7 +36,7 @@ type HB struct {
 	enclock sync.Mutex
 }
 
-func (h *HB) Propose(value *pb.Message) ([]*pb.Message, error) {
+func (h *HB) Propose(value *pb.Message) ([]*pb.Message, []*pb.TS, error) {
 	// encrypt value.Data
 	cpid := h.pig.GetChildPID("ACS", h.rootpid)
 
@@ -57,7 +57,7 @@ func (h *HB) Propose(value *pb.Message) ([]*pb.Message, error) {
 		Data:     ct,
 	})
 
-	return msgs, nil
+	return msgs, nil, nil
 }
 
 func (h *HB) acs(value *pb.Message) []*pb.Message {

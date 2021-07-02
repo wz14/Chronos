@@ -11,7 +11,7 @@ import (
 func TestNewHB(t *testing.T) {
 	nls := config.NewLocalStart(func(s config.Start) {
 		conf := s.GetConfig()
-		ml, err := Consensus(&pb.Message{
+		ml, _, err := Consensus(HBCon, &pb.Message{
 			Id:       "Consen",
 			Sender:   uint32(conf.MyID),
 			Receiver: 0,
