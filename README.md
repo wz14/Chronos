@@ -18,6 +18,12 @@ docker run AAC               # with logs
 **Named channel**: Naming channel for all protocols in a tree structure. The child protocol
 is connect to parent protocol by `.`.
 
+## TODOs
+
+- [ ] Correct error handle and log specification.
+- [ ] More test for code.
+- [ ] A flag parser for main.
+
 ### LICENSE
 
 Licensed by Apache 2.0.
