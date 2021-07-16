@@ -23,6 +23,7 @@ is connect to parent protocol by `.`.
 - [ ] Correct error handle and log specification.
 - [ ] More test for code.
 - [ ] A flag parser for main.
+- [ ] Don't use makefile, use sh scripts.
 
 ### LICENSE
 
