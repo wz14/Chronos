@@ -1,19 +1,19 @@
-## Asynchronous Agreement Components
+# Asynchronous Agreement Components
 
-### What is it?
+## What is it?
 
 Pure go implementation of asynchronous consensus, including byzantine reliable broadcast,
 byzantine agreement and so on.
 
-### Start
+## Start
 
 ```
 docker build . -t AAC
-docker run AAC 2>&/dev/null  # without logs
+docker run AAC 2>/dev/null  # without logs
 docker run AAC               # with logs
 ```
 
-### Design of code
+## Design of code
 
 **Named channel**: Naming channel for all protocols in a tree structure. The child protocol
 is connect to parent protocol by `.`.
@@ -25,7 +25,7 @@ is connect to parent protocol by `.`.
 - [ ] A flag parser for main.
 - [ ] Don't use makefile, use sh scripts.
 
-### LICENSE
+## LICENSE
 
 Licensed by Apache 2.0.
 

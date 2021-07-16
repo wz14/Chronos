@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  aac_build:
+    build: .
+    volumes:
+      - ./:/AAC
+    working_dir: /AAC
+    command: make build

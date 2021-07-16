@@ -3,6 +3,7 @@
 ## Install docker in ubuntu20
 
 ```shell script
+sudo apt-get update
 sudo apt-get install docker.io
 # add docker group to avoid use `sudo` before docker
 sudo groupadd docker
