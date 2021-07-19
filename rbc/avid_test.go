@@ -8,7 +8,7 @@ import (
 )
 
 func TestAVIDRBC(t *testing.T) {
-	s := config.NewLocalStart(func(s config.Start) {
+	s := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		pig := s.Getpig()
 		nig := s.Getnig()
 		config := s.GetConfig()

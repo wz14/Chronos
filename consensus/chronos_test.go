@@ -10,7 +10,7 @@ import (
 )
 
 func TestNewCHOS(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		conf := s.GetConfig()
 		pid := s.Getpig().GetRootPID("CHOS1")
 		c, err := NewCHOS(pid, s)

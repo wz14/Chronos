@@ -10,7 +10,7 @@ import (
 var log = logger.NewLogger("main")
 
 func NewStart() *Start {
-	c, err := config.NewConfig("./mock/config1.yaml") // get a no-pointer config
+	c, err := config.NewConfig("./mock/config1.yaml", true) // get a no-pointer config
 	if err != nil {
 		log.Fatalf("read config fail: %s", err.Error())
 	}

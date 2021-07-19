@@ -7,7 +7,7 @@ import (
 func TestConfig_ReadConfig(t *testing.T) {
 	ConfigName := "./mock/config1.yaml"
 	c := Config{}
-	err := c.ReadConfig(ConfigName)
+	err := c.ReadConfig(ConfigName, true)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -16,7 +16,7 @@ func TestConfig_ReadConfig(t *testing.T) {
 func TestConfig_ReadConfig2(t *testing.T) {
 	ConfigName := "./mock/config1.yaml"
 	c := Config{}
-	err := c.ReadConfig(ConfigName)
+	err := c.ReadConfig(ConfigName, true)
 	if err != nil {
 		t.Error(err.Error())
 	}

@@ -11,7 +11,7 @@ import (
 // TestNewSACS :all inputs of nodes satisfy strict predicate && no control message be sent
 // expected :all nodes return output satisfy strict  predicate
 func TestNewSACS(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		q := func(message *pb.Message) bool {
 			return bytes.Contains(message.Data, []byte("mockdata"))
 		}
@@ -45,7 +45,7 @@ func TestNewSACS(t *testing.T) {
 // and all honest nodes receive control signal. Then,
 // all honest node will output eventually (may not satisfy strict q).
 func TestNewSACS1(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		q := func(message *pb.Message) bool {
 			return bytes.Contains(message.Data, []byte("strictdata"))
 		}

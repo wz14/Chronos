@@ -14,12 +14,20 @@ import (
 
 var wg = sync.WaitGroup{}
 
-func NewLocalStart(f func(s Start), configpath string) *LocalStart {
+func NewLocalStartWithReadLocalConfig(f func(s Start), configpath string) *LocalStart {
 	lo := logger.NewLogger("config")
-	c, err := NewConfig(configpath) // get a no-pointer config
+	c, err := NewConfig(configpath, true) // get a no-pointer config
 	if err != nil {
 		lo.Fatalf("read config fail: %s", err.Error())
 	}
+	return &LocalStart{
+		c: c,
+		l: logger.NewLogger("config"),
+		f: f,
+	}
+}
+
+func NewLocalStart(f func(s Start), c Config) *LocalStart {
 	return &LocalStart{
 		c: c,
 		l: logger.NewLogger("config"),

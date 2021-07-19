@@ -10,7 +10,7 @@ import (
 // Test the condition that all node propose 1
 func TestNewMMRABA(t *testing.T) {
 	//mmr := NewMMRABA()
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		conf := s.GetConfig()
 		m, err := ABADecided(&pb.Message{
 			Id:       "testMMR1",
@@ -31,7 +31,7 @@ func TestNewMMRABA(t *testing.T) {
 
 // Test the condition that all node propose 0
 func TestNewMMRABA2(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		conf := s.GetConfig()
 		m, err := ABADecided(&pb.Message{
 			Id:       "testMMR2",
@@ -53,7 +53,7 @@ func TestNewMMRABA2(t *testing.T) {
 
 // Test the condition that all honest node propose 1 and dishonest node propose 0
 func TestNewMMRABA3(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		conf := s.GetConfig()
 		var m *pb.Message
 		var err error
@@ -85,7 +85,7 @@ func TestNewMMRABA3(t *testing.T) {
 }
 
 func TestNewMMRABA4(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		conf := s.GetConfig()
 		var m *pb.Message
 		var err error

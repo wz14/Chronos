@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewBenorACS(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		conf := s.GetConfig()
 		ml, err := ACSDecided(BENOR, &pb.Message{
 			Id:       "ACS1",

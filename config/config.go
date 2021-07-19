@@ -4,8 +4,6 @@ import (
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"os"
-	"strconv"
 )
 
 var ConfigReadError = errors.New("config read fail, check config.yaml in root directory")
@@ -23,14 +21,14 @@ type Config struct {
 	Txnum    int      `yaml:"Txnum"`
 	// judge if execute read config function before
 	// default is false in golang structure declare
-	isRead bool
-	MyID   int
+	isRead    bool
+	MyID      int    `yaml:"MyID"`
+	Statistic string `yaml:"Statistic"`
 }
 
-func NewConfig(configname string) (Config, error) {
-	ConfigName := configname
+func NewConfig(configName string, isLocal bool) (Config, error) {
 	c := Config{}
-	err := c.ReadConfig(ConfigName)
+	err := c.ReadConfig(configName, isLocal)
 	if err != nil {
 		return Config{}, err
 	}
@@ -38,9 +36,7 @@ func NewConfig(configname string) (Config, error) {
 }
 
 // read config from ConfigName file location
-func (c *Config) ReadConfig(ConfigName string) error {
-	var id string
-	var ok bool
+func (c *Config) ReadConfig(ConfigName string, isLocal bool) error {
 	byt, err := ioutil.ReadFile(ConfigName)
 	if err != nil {
 		goto ret
@@ -63,19 +59,11 @@ func (c *Config) ReadConfig(ConfigName string) error {
 	}
 	c.isRead = true
 
-	id, ok = os.LookupEnv("ID")
-	if !ok {
-		return errors.New("no ID environment in os")
-	}
-
-	c.MyID, err = strconv.Atoi(id)
-	if err != nil {
-		return errors.New("convert ID environment value to integer fail")
-	}
-
-	// id is begin from 0 to ... N-1
-	if c.MyID >= c.N || c.MyID < 0 {
-		return errors.New("ID is begin from 0 to N-1")
+	if !isLocal {
+		// id is begin from 0 to ... N-1
+		if c.MyID >= c.N || c.MyID < 0 {
+			return errors.New("ID is begin from 0 to N-1")
+		}
 	}
 
 	return nil

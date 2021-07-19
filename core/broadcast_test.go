@@ -8,7 +8,7 @@ import (
 )
 
 func TestBroadCast(t *testing.T) {
-	config.NewLocalStart(func(s config.Start) {
+	config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		conf := s.GetConfig()
 		t.Log("enter sender routine")
 		if conf.MyID == 1 {

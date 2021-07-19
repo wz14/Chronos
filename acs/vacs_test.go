@@ -10,7 +10,7 @@ import (
 
 // plain test
 func TestNewVACS(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		q := func(message *pb.Message) bool {
 			return bytes.Contains(message.Data, []byte("mockdata"))
 		}
@@ -40,7 +40,7 @@ func TestNewVACS(t *testing.T) {
 
 // TestNewVACS1 is a error test
 func TestNewVACS1(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		q := func(message *pb.Message) bool {
 			return bytes.Contains(message.Data, []byte("gooddata"))
 		}

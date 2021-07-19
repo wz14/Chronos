@@ -14,8 +14,16 @@ func main() {
 	if len(os.Args) != 2 {
 		lo.Fatal(usage)
 	}
+
+	c, err := config.NewConfig("./config.yaml", true) // get a no-pointer config
+	if err != nil {
+		lo.Fatalf("read config fail: %s", err.Error())
+	}
+
+	benchmark.InitBenchmark(c)
+
 	if os.Args[1] == "local" {
-		start := config.NewLocalStart(f, "./config.yaml")
+		start := config.NewLocalStart(f, c)
 		start.Run()
 		_ = benchmark.BenchmarkOuput()
 	} else if os.Args[1] == "remoteGen" {

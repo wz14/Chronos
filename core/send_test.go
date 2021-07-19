@@ -8,7 +8,7 @@ import (
 )
 
 func TestSend(t *testing.T) {
-	nls := config.NewLocalStart(func(s config.Start) {
+	nls := config.NewLocalStartWithReadLocalConfig(func(s config.Start) {
 		conf := s.GetConfig()
 		if conf.MyID == 1 {
 			err := Send(&pb.Message{

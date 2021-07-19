@@ -1,6 +1,7 @@
 package benchmark
 
 import (
+	"acc/config"
 	"acc/logger"
 	"fmt"
 	"os"
@@ -14,8 +15,15 @@ import (
 
 var l *logger.Logger = logger.NewLogger("Benchmark")
 var BenchmarkTable = map[string]*internal{}
-var fileLocation, _ = os.LookupEnv("STATISTIC")
+var fileLocation string
 var mu = sync.Mutex{}
+
+func InitBenchmark(c config.Config) {
+	fileLocation = c.Statistic
+	if fileLocation == "" {
+		l.Fatalf("fileLocation is empty")
+	}
+}
 
 type internal struct {
 	l      []int
