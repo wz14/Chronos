@@ -4,7 +4,7 @@
 
 ```shell script
 sudo apt-get update
-sudo apt-get install docker.io
+sudo apt-get install -y docker.io
 # add docker group to avoid use `sudo` before docker
 sudo groupadd docker
 sudo usermod -aG docker $USER
