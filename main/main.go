@@ -4,10 +4,11 @@ import (
 	"acc/benchmark"
 	"acc/config"
 	"acc/logger"
+	"fmt"
 	"os"
 )
 
-const usage = "./start local|remoteGen|remote"
+const usage = "usage: ./start local|remoteGen|remote|help"
 
 func main() {
 	lo := logger.NewLogger("main")
@@ -30,6 +31,8 @@ func main() {
 		log.Fatal("not be implemented yet")
 	} else if os.Args[1] == "remote" {
 		log.Fatal("not be implemented yet")
+	} else if os.Args[1] == "help" {
+		fmt.Println(usage)
 	} else {
 		lo.Fatal(usage)
 	}
