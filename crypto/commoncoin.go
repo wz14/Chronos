@@ -1,11 +1,14 @@
 package crypto
 
 import (
+	"encoding/base64"
 	"github.com/pkg/errors"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/pairing"
 	"go.dedis.ch/kyber/v3/share"
 	"go.dedis.ch/kyber/v3/sign/bls"
 	"go.dedis.ch/kyber/v3/sign/tbls"
+	"strconv"
 )
 
 type PartPriKey = share.PriShare
@@ -51,6 +54,100 @@ func (c *CCconfig) Combine(sigs [][]byte, msg []byte) ([]byte, error) {
 		return nil, errors.Wrap(err, "sig recover fail")
 	}
 	return sig, nil
+}
+
+func (c *CCconfig) Marshal() ([]string, error) {
+	result := make([]string, 6)
+	result[0] = strconv.Itoa(c.T)
+	result[1] = strconv.Itoa(c.N)
+	result[2] = strconv.Itoa(c.psk.I)
+	// marshal psk
+	byts, err := c.psk.V.MarshalBinary()
+	if err != nil {
+		return nil, errors.Wrapf(err, "fail to marshal CCconfig.psk.V")
+	}
+	result[3] = base64.StdEncoding.EncodeToString(byts)
+
+	base, committs := c.pk.Info()
+	// marshal base
+	byts, err = base.MarshalBinary()
+	if err != nil {
+		return nil, errors.Wrapf(err, "fail to marshal CCconfig.pk.base")
+	}
+	result[4] = base64.StdEncoding.EncodeToString(byts)
+	// marshal committs
+	result[5] = strconv.Itoa(len(committs))
+	for i, commit := range committs {
+		byts, err = commit.MarshalBinary()
+		if err != nil {
+			return nil, errors.Wrapf(err, "fail to marshal CCconfig.pk.commit[%d]", i)
+		}
+		result = append(result, base64.StdEncoding.EncodeToString(byts))
+	}
+	return result, nil
+}
+
+func (c *CCconfig) UnMarshal(s []string) error {
+	suit := pairing.NewSuiteBn256()
+	var err error
+	c.T, err = strconv.Atoi(s[0])
+	if err != nil {
+		return errors.Wrap(err, "fail to unmarshal T")
+	}
+	c.N, err = strconv.Atoi(s[1])
+	if err != nil {
+		return errors.Wrap(err, "fail to unmarshal N")
+	}
+	// unmarshal psk
+	i, err := strconv.Atoi(s[2])
+	if err != nil {
+		return errors.Wrap(err, "fail to unmarshal psk.i")
+	}
+	vbytes, err := base64.StdEncoding.DecodeString(s[3])
+	if err != nil {
+		return errors.Wrap(err, "fail to unmarshal psk.v")
+	}
+	v := suit.G1().Scalar()
+	err = v.UnmarshalBinary(vbytes)
+	if err != nil {
+		return errors.Wrap(err, "fail to unmarshal psk.v")
+	}
+	c.psk = &PartPriKey{
+		I: i,
+		V: v,
+	}
+	// ummarshal pk
+	baseByts, err := base64.StdEncoding.DecodeString(s[4])
+	if err != nil {
+		return errors.Wrap(err, "fail to unmarshal pk.base")
+	}
+	base := suit.G2().Point()
+	err = base.UnmarshalBinary(baseByts)
+	if err != nil {
+		return errors.Wrap(err, "fail to unmarshal pk.base")
+	}
+	committsLen, err := strconv.Atoi(s[5])
+	if err != nil {
+		return errors.Wrap(err, "fail to unmarshal pk.committsLen")
+	}
+	if committsLen+6 != len(s) {
+		return errors.Errorf("pk.committsLen = %d; len(s) = %d", committsLen, len(s))
+	}
+	committs := make([]kyber.Point, committsLen)
+	for i := 0; i < committsLen; i++ {
+		commit := suit.G2().Point()
+		commitByts, err := base64.StdEncoding.DecodeString(s[6+i])
+		if err != nil {
+			return errors.Wrapf(err, "fail to unmarshal pk.committs[%d]", i)
+		}
+		err = commit.UnmarshalBinary(commitByts)
+		if err != nil {
+			return errors.Wrapf(err, "fail to unmarshal pk.committs[%d]", i)
+		}
+		committs[i] = commit
+	}
+	c.pk = share.NewPubPoly(suit.G2(), base, committs)
+	return nil
 }
 
 // sklist, pk, error
