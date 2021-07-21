@@ -7,3 +7,10 @@ services:
       - ./:/AAC
     working_dir: /AAC
     command: make build
+
+  aac_test:
+    build: .
+    volumes:
+    - ./:/AAC
+    working_dir: /AAC
+    command: make buildtest
