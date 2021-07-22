@@ -34,7 +34,12 @@ func main() {
 		}
 		log.Info("remoteGen ok !")
 	} else if os.Args[1] == "remote" {
-		log.Fatal("not be implemented yet")
+		if c.Isremote != true {
+			log.Fatal("the config.yaml is not remote config")
+		}
+		start := config.NewRemoteStart(f, c)
+		start.Run()
+		_ = benchmark.BenchmarkOuput()
 	} else if os.Args[1] == "help" {
 		fmt.Println(usage)
 	} else {
