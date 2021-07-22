@@ -23,11 +23,6 @@ type PublicKey []byte
 type DecryptionShare [96]byte
 type CipherText []byte
 
-type Config struct {
-	threshold   int
-	participant int
-}
-
 type DefaultTpke struct {
 	threshold    int
 	publicKey    *tpk.PublicKey
@@ -96,14 +91,10 @@ type TPKE struct {
 
 func NewTPKE(N int, t int) []*TPKE {
 	tpkes := []*TPKE{}
-	c := &Config{
-		threshold:   t,
-		participant: N,
-	}
-	secretKeySet := tpk.RandomSecretKeySet(c.threshold)
+	secretKeySet := tpk.RandomSecretKeySet(t)
 	publicKeySet := secretKeySet.PublicKeySet()
 	for i := 0; i < N; i++ {
-		tpke, _ := NewDefaultTpke(N, secretKeySet.KeyShareUsingString(strconv.Itoa(i)).Serialize(),
+		tpke, _ := NewDefaultTpke(t, secretKeySet.KeyShareUsingString(strconv.Itoa(i)).Serialize(),
 			publicKeySet.Serialize())
 		tpkes = append(tpkes, &TPKE{
 			id:   i,
