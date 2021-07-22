@@ -28,7 +28,11 @@ func main() {
 		start.Run()
 		_ = benchmark.BenchmarkOuput()
 	} else if os.Args[1] == "remoteGen" {
-		log.Fatal("not be implemented yet")
+		err := c.RemoteGen(".")
+		if err != nil {
+			log.Fatal("remoteGen fail: %s", err.Error())
+		}
+		log.Info("remoteGen ok !")
 	} else if os.Args[1] == "remote" {
 		log.Fatal("not be implemented yet")
 	} else if os.Args[1] == "help" {

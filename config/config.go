@@ -1,9 +1,11 @@
 package config
 
 import (
+	"acc/crypto"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"strconv"
 )
 
 var ConfigReadError = errors.New("config read fail, check config.yaml in root directory")
@@ -22,8 +24,10 @@ type Config struct {
 	// judge if execute read config function before
 	// default is false in golang structure declare
 	isRead    bool
-	MyID      int    `yaml:"MyID"`
-	Statistic string `yaml:"Statistic"`
+	MyID      int      `yaml:"MyID"`
+	Statistic string   `yaml:"Statistic"`
+	CCconfig  []string `yaml:"CCconfig"`
+	Econfig   []string `yaml:"Econfig"`
 }
 
 func NewConfig(configName string, isLocal bool) (Config, error) {
@@ -118,4 +122,44 @@ func (c *Config) GetMyID() (int, error) {
 		return 0, NotReadFileError
 	}
 	return c.MyID, nil
+}
+
+func (c *Config) Marshal(location string) error {
+	byts, err := yaml.Marshal(c)
+	if err != nil {
+		return errors.Wrap(err, "marshal config fail")
+	}
+	err = ioutil.WriteFile(location, byts, 0777)
+	if err != nil {
+		return errors.Wrap(err, "marshal config fail")
+	}
+	return nil
+}
+
+func (c *Config) RemoteGen(dir string) error {
+	c.Isremote = true
+	// myid; CCconfig; TPKconfig
+	ccconfigs, err := crypto.NewCCconfigs(c.F, c.N)
+	if err != nil {
+		return errors.Wrap(err, "generate cc_config fail")
+	}
+	econfigs := crypto.NewTPKE(c.N, c.F)
+	for i := 0; i < c.N; i++ {
+		c.MyID = i
+		ccM, err := ccconfigs[i].Marshal()
+		if err != nil {
+			return errors.Wrap(err, "generate cc_config fail")
+		}
+		c.CCconfig = ccM
+		eM, err := econfigs[i].Marshal()
+		if err != nil {
+			return errors.Wrap(err, "generate e_config fail")
+		}
+		c.Econfig = eM
+		err = c.Marshal(dir + "/config_" + strconv.Itoa(i) + ".yaml")
+		if err != nil {
+			return errors.Wrap(err, "marshal config fail")
+		}
+	}
+	return nil
 }
