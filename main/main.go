@@ -6,6 +6,7 @@ import (
 	"acc/logger"
 	"fmt"
 	"os"
+	"time"
 )
 
 const usage = "usage: ./start local|remoteGen|remote|help"
@@ -40,6 +41,11 @@ func main() {
 		start := config.NewRemoteStart(f, c)
 		start.Run()
 		_ = benchmark.BenchmarkOuput()
+		// TODO:config 1.server prepare time && 2.server wait time && 3. which consensus is used
+		// TODO:rename main/localstart or delete and add to main
+		// TODO:add RBC benchmark in CHOS
+		fmt.Println("wait some time(120) for others aba is ok")
+		time.Sleep(time.Second * time.Duration(c.PrepareTime))
 	} else if os.Args[1] == "help" {
 		fmt.Println(usage)
 	} else {

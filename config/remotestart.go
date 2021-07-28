@@ -100,7 +100,7 @@ func (s *RemoteStart) HonestRun() {
 	go server.Serve(lis)
 
 	// wait time may config in file
-	time.Sleep(2 * time.Second)
+	time.Sleep(time.Duration(s.c.WaitTime) * time.Second)
 
 	// create id group
 	s.nig, err = idchannel.NewIDGroup(&s.c)
