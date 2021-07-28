@@ -29,8 +29,9 @@ type Config struct {
 	CCconfig  []string `yaml:"CCconfig"`
 	Econfig   []string `yaml:"Econfig"`
 	// server start time
-	PrepareTime int `yaml:"PrepareTime"`
-	WaitTime    int `yaml:"WaitTime"`
+	PrepareTime int    `yaml:"PrepareTime"`
+	WaitTime    int    `yaml:"WaitTime"`
+	ConsenType  string `yaml:"ConsenType"`
 }
 
 func NewConfig(configName string, isLocal bool) (Config, error) {

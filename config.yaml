@@ -7,3 +7,4 @@ Txnum: 10000
 Statistic: "./statistic"
 PrepareTime: 60
 WaitTime: 60
+ConsenType: "CHOS"
