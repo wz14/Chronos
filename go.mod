@@ -3,7 +3,7 @@ module acc
 go 1.14
 
 require (
-	github.com/WangZhuo2000/tpke v0.0.0-20210629091200-915df37b3ab4
+	github.com/wz14/tpke v0.0.0-20210629091200-915df37b3ab4
 	github.com/cbergoon/merkletree v0.2.0
 	github.com/golang/protobuf v1.4.2
 	github.com/klauspost/reedsolomon v1.9.12
